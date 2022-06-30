@@ -1,7 +1,7 @@
 from designe import Ui_TextEditor
 from PyQt5 import QtWidgets
 from PyQt5.QtWidgets import QFileDialog ,QMessageBox
-from PyQt5.QtPrintSupport import QPrinter, QPrintDialog
+from PyQt5.QtPrintSupport import QPrinter, QPrintDialog,QPrintPreviewDialog
 
 class EditorWindow(QtWidgets.QMainWindow, Ui_TextEditor):
     def __init__(self) -> None:
@@ -12,6 +12,7 @@ class EditorWindow(QtWidgets.QMainWindow, Ui_TextEditor):
         self.actionOpen.triggered.connect(self.openFile)
         self.actionSave.triggered.connect(self.fileSave)
         self.actionPrint.triggered.connect(self.printfile)
+        self.actionPrint_Preview.triggered.connect(self.printPreview)
         
 
         self.show()
@@ -49,4 +50,13 @@ class EditorWindow(QtWidgets.QMainWindow, Ui_TextEditor):
             self.textEdit.print_(printer)
                        
                        
+    def printPreview(self):
+        printer = QPrinter(QPrinter.HighResolution)
+        previewDialog = QPrintPreviewDialog(printer,self)
+        previewDialog.paintRequested.connect(self.printPreview)
+        previewDialog.exec_()
+        
+        
+    def printPreview2(self,printer):
+        self.textEdit.print_(printer)     
                         
