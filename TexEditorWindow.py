@@ -1,3 +1,4 @@
+#final Project Mousa Mortazavi-Ali Haj Sadeghian- Hossein Ataee
 from designe import Ui_TextEditor
 from PyQt5 import QtWidgets
 from PyQt5.QtWidgets import QFileDialog, QMessageBox , QFontDialog ,QColorDialog
