@@ -82,6 +82,7 @@
     </property>
     <addaction name="actionBold"/>
     <addaction name="actionItalic"/>
+    <addaction name="actionUnderline"/>
     <addaction name="separator"/>
     <addaction name="actionLeft"/>
     <addaction name="actionCenter"/>
@@ -245,6 +246,11 @@
   <action name="actionAbou_Qt">
    <property name="text">
     <string>Abou Qt</string>
+   </property>
+  </action>
+  <action name="actionUnderline">
+   <property name="text">
+    <string>Underline</string>
    </property>
   </action>
  </widget>

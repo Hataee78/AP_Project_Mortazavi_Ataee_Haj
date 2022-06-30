@@ -1,8 +1,9 @@
 from designe import Ui_TextEditor
 from PyQt5 import QtWidgets
-from PyQt5.QtWidgets import QFileDialog, QMessageBox , QFontDialog 
+from PyQt5.QtWidgets import QFileDialog, QMessageBox , QFontDialog ,QColorDialog
 from PyQt5.QtPrintSupport import QPrinter, QPrintDialog, QPrintPreviewDialog
 from PyQt5.QtCore import QFileInfo
+from PyQt5.QtGui import QFont
 
 class EditorWindow(QtWidgets.QMainWindow, Ui_TextEditor):
     def __init__(self) -> None:
@@ -21,6 +22,11 @@ class EditorWindow(QtWidgets.QMainWindow, Ui_TextEditor):
         self.actionUndo.triggered.connect(self.textEdit.undo)
         self.actionRedo.triggered.connect(self.textEdit.redo)
         self.actionFont.triggered.connect(self.fontDialog)
+        self.actionColor.triggered.connect(self.colorDialog)
+        self.actionBold.triggered.connect(self.textBold)
+        self.actionItalic.triggered.connect(self.italic)
+        self.actionUnderline.triggered.connect(self.underline)
+
       
 
 
@@ -107,4 +113,27 @@ class EditorWindow(QtWidgets.QMainWindow, Ui_TextEditor):
         font , ok = QFontDialog.getFont()
         
         if ok:
-            self.textEdit.setFont(font)           
+            self.textEdit.setFont(font)
+               
+    def colorDialog(self):
+        color = QColorDialog.getColor()
+        self.textEdit.setTextColor(color)    
+        
+        
+    def textBold(self):
+        font = QFont()
+        font.setBold(True)
+        self.textEdit.setFont(font)
+                        
+     
+     
+    def italic(self):
+        font = QFont()
+        font.setItalic(True)
+        self.textEdit.setFont(font)      
+        
+    def underline(self):
+        font = QFont()
+        font.setUnderline(True)
+        self.textEdit.setFont()
+                          
