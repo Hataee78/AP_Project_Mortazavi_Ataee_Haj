@@ -30,7 +30,7 @@ from TexEditorWindow import EditorWindow
 # sys.exit(app.exec_())
 
 app = QApplication(sys.argv)
-
+app.setStyle("Fusion")
 textEditor = EditorWindow()
 sys.exit(app.exec_())
 
