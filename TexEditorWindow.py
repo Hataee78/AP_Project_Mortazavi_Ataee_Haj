@@ -1,6 +1,6 @@
 from designe import Ui_TextEditor
 from PyQt5 import QtWidgets
-from PyQt5.QtWidgets import QFileDialog, QMessageBox 
+from PyQt5.QtWidgets import QFileDialog, QMessageBox , QFontDialog 
 from PyQt5.QtPrintSupport import QPrinter, QPrintDialog, QPrintPreviewDialog
 from PyQt5.QtCore import QFileInfo
 
@@ -17,7 +17,11 @@ class EditorWindow(QtWidgets.QMainWindow, Ui_TextEditor):
         self.actionExport.triggered.connect(self.exportPdf)
         self.actionExit.triggered.connect(self.exitApp)
         self.actionCopy.triggered.connect(self.copy)
-        self.actionPaste.triggered.connect(self.copy)
+        self.actionCopy_Paste.triggered.connect(self.paste)
+        self.actionUndo.triggered.connect(self.textEdit.undo)
+        self.actionRedo.triggered.connect(self.textEdit.redo)
+        self.actionFont.triggered.connect(self.fontDialog)
+      
 
 
         self.show()
@@ -87,4 +91,20 @@ class EditorWindow(QtWidgets.QMainWindow, Ui_TextEditor):
        
        
     def paste(self):
-        self.textEdit.append(self.copiedText)           
+        self.textEdit.append(self.copiedText)         
+          
+          
+          
+    # def cut(self):
+    #     cursor = self.textEdit.textCursor()
+    #     textSelected = cursor.selectedText()
+    #     self.copiedText = textSelected
+    #     self.textEdit.cut()
+    
+    
+    
+    def fontDialog(self):
+        font , ok = QFontDialog.getFont()
+        
+        if ok:
+            self.textEdit.setFont(font)           
