@@ -14,23 +14,36 @@
    <string>MainWindow</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <widget class="QFontComboBox" name="fontComboBox">
-    <property name="geometry">
-     <rect>
-      <x>470</x>
-      <y>60</y>
-      <width>226</width>
-      <height>22</height>
-     </rect>
-    </property>
-   </widget>
    <widget class="QTextEdit" name="textEdit">
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>100</y>
+      <y>30</y>
       <width>771</width>
-      <height>441</height>
+      <height>511</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label">
+    <property name="geometry">
+     <rect>
+      <x>30</x>
+      <y>0</y>
+      <width>55</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Font Size</string>
+    </property>
+   </widget>
+   <widget class="QSpinBox" name="FontSize">
+    <property name="geometry">
+     <rect>
+      <x>90</x>
+      <y>0</y>
+      <width>42</width>
+      <height>22</height>
      </rect>
     </property>
    </widget>
@@ -90,19 +103,6 @@
     <addaction name="actionType_Name"/>
     <addaction name="actionJusstify"/>
    </widget>
-   <widget class="QMenu" name="menuTime_and_Date">
-    <property name="title">
-     <string>Time and Date</string>
-    </property>
-    <addaction name="actionTime"/>
-    <addaction name="actionDate"/>
-   </widget>
-   <widget class="QMenu" name="menuText_Highliter">
-    <property name="title">
-     <string>Text Highlighter</string>
-    </property>
-    <addaction name="actionText_Highlite"/>
-   </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
      <string>Help</string>
@@ -114,8 +114,6 @@
    <addaction name="menuEdit"/>
    <addaction name="menuFormat"/>
    <addaction name="menuStyle"/>
-   <addaction name="menuTime_and_Date"/>
-   <addaction name="menuText_Highliter"/>
    <addaction name="menuHelp"/>
   </widget>
   <action name="actionOpen">

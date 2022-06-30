@@ -2,7 +2,7 @@ from designe import Ui_TextEditor
 from PyQt5 import QtWidgets
 from PyQt5.QtWidgets import QFileDialog, QMessageBox , QFontDialog ,QColorDialog
 from PyQt5.QtPrintSupport import QPrinter, QPrintDialog, QPrintPreviewDialog
-from PyQt5.QtCore import QFileInfo
+from PyQt5.QtCore import QFileInfo , Qt
 from PyQt5.QtGui import QFont
 
 class EditorWindow(QtWidgets.QMainWindow, Ui_TextEditor):
@@ -26,6 +26,17 @@ class EditorWindow(QtWidgets.QMainWindow, Ui_TextEditor):
         self.actionBold.triggered.connect(self.textBold)
         self.actionItalic.triggered.connect(self.italic)
         self.actionUnderline.triggered.connect(self.underline)
+        self.actionJusstify.triggered.connect(self.justify)
+        self.actionRight.triggered.connect(self.allignRight)
+        self.actionLeft.triggered.connect(self.allignLeft)
+        self.actionCenter.triggered.connect(self.allignCenter)
+        
+        self.FontSize.setValue(24)
+        self.textEdit.setFontPointSize(24)
+        self.FontSize.valueChanged.connect(self.setFontSize)
+        
+        
+        
 
       
 
@@ -135,5 +146,26 @@ class EditorWindow(QtWidgets.QMainWindow, Ui_TextEditor):
     def underline(self):
         font = QFont()
         font.setUnderline(True)
-        self.textEdit.setFont()
-                          
+        self.textEdit.setFont(font)
+        
+    def allignLeft(self):
+        self.textEdit.setAlignment(Qt.AlignLeft)
+    
+    
+    def allignCenter(self):
+        self.textEdit.setAlignment(Qt.AlignCenter)
+                                  
+                                  
+    def allignRight(self):
+        self.textEdit.setAlignment(Qt.AlignRight)
+        
+        
+    def justify(self):
+        self.textEdit.setAlignment(Qt.AlignJustify)  
+        
+    
+    
+    
+    def setFontSize(self):
+        value = self.FontSize.value()
+        self.textEdit.setFontPointSize(value)                                    
