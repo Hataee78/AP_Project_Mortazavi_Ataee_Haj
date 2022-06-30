@@ -164,7 +164,7 @@
   </action>
   <action name="actionCopy_Paste">
    <property name="text">
-    <string>Copy Paste</string>
+    <string> Paste</string>
    </property>
   </action>
   <action name="actionUndo">

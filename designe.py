@@ -11,7 +11,7 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 
 
-class Ui_TextEditor(object):
+class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(800, 600)
@@ -156,7 +156,7 @@ class Ui_TextEditor(object):
         self.actionExport.setText(_translate("MainWindow", "Export PDF"))
         self.actionExit.setText(_translate("MainWindow", "Exit"))
         self.actionCopy.setText(_translate("MainWindow", "Copy"))
-        self.actionCopy_Paste.setText(_translate("MainWindow", "Copy Paste"))
+        self.actionCopy_Paste.setText(_translate("MainWindow", " Paste"))
         self.actionUndo.setText(_translate("MainWindow", "Undo"))
         self.actionRedo.setText(_translate("MainWindow", "Redo"))
         self.actionFont.setText(_translate("MainWindow", "Font"))
@@ -179,7 +179,7 @@ if __name__ == "__main__":
     import sys
     app = QtWidgets.QApplication(sys.argv)
     MainWindow = QtWidgets.QMainWindow()
-    ui = Ui_TextEditor()
+    ui = Ui_MainWindow()
     ui.setupUi(MainWindow)
     MainWindow.show()
     sys.exit(app.exec_())
