@@ -12,7 +12,7 @@ from TexEditorWindow import EditorWindow
 #         self.setupUi(self)
 #         self.textEdit.textChanged.connect(self.type)
     
-#     def type(self):
+#     def type(self)
 #         """PyQt5 SLOT"""
 #         print("Your are now typing")
 #         # self.textEdit.setText(self, text)
@@ -30,7 +30,6 @@ from TexEditorWindow import EditorWindow
 # sys.exit(app.exec_())
 
 app = QApplication(sys.argv)
-app.setStyle("Fusion")
+# app.setStyleSheet("QTextEdit { background-color: yellow }")
 textEditor = EditorWindow()
 sys.exit(app.exec_())
-
