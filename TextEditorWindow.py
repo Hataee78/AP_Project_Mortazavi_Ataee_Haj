@@ -1,29 +1,33 @@
 import sys
 import platform
-from googletrans import Translator
-from PySide2 import QtCore, QtGui, QtWidgets
-from PySide2.QtCore import (QCoreApplication, QPropertyAnimation, QDate, QDateTime, QMetaObject, QObject, QPoint, QRect, QSize, QTime, QUrl, Qt, QEvent)
-from PySide2.QtGui import (QBrush, QColor, QConicalGradient, QCursor, QFont, QFontDatabase, QIcon, QKeySequence, QLinearGradient, QPalette, QPainter, QPixmap, QRadialGradient)
-from PySide2.QtWidgets import *
+from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5.QtCore import (QCoreApplication, QPropertyAnimation, QDate, QDateTime, QMetaObject, QObject, QPoint, QRect, QSize, QTime, QUrl, Qt, QEvent)
+from PyQt5.QtGui import (QBrush, QColor, QConicalGradient, QCursor, QFont, QFontDatabase, QIcon, QKeySequence, QLinearGradient, QPalette, QPainter, QPixmap, QRadialGradient)
+from PyQt5.QtWidgets import *
+from PyQt5.QtCore import QFileInfo, Qt
+from PyQt5.QtPrintSupport import QPrinter, QPrintDialog, QPrintPreviewDialog
 from design import Ui_TextEditor
+from googletrans import Translator
 
 class MainWindow(QtWidgets.QMainWindow, Ui_TextEditor):
     def __init__(self) -> None:
         super().__init__()
         self.setupUi(self)
 
-        self.textEdit.textChanged.connect(self.change)
+        self.font = QFont()
 
         self.actionNew.triggered.connect(self.fileNew)
         self.actionOpen.triggered.connect(self.openFile)
-        self.actionSave.triggered.connect(self.fileSave)
+
+        self.actionSave.triggered.connect(lambda: self.fileSave("*.txt", "Save File"))
+        self.actionExport.triggered.connect(lambda: self.fileSave("*.pdf", "Export to PDF"))
+
         self.actionPrint.triggered.connect(self.printfile)
         self.actionPrint_Preview.triggered.connect(self.printPreview)
-        self.actionExport.triggered.connect(self.exportPdf)
         self.actionExit.triggered.connect(self.exitApp)
         self.actionCopy.triggered.connect(self.copy)
         self.actionCopy_Paste.triggered.connect(self.paste)
-        # self.actionCut.triggered.connect(self.cut)
+        self.actionCut.triggered.connect(self.cut)
         self.actionUndo.triggered.connect(self.textEdit.undo)
         self.actionRedo.triggered.connect(self.textEdit.redo)
         self.actionFont.triggered.connect(self.fontDialog)
@@ -44,6 +48,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_TextEditor):
 
         self.Persian_pushButton.clicked.connect(lambda : self.trans("fa")) # we defined lambda function to recognize which signal was called slot by send function to another function
         self.English_pushButton.clicked.connect(lambda : self.trans("en"))
+        self.actionAbout.triggered.connect(self.aboutus)
 
         self.thread = None
 
@@ -55,68 +60,53 @@ class MainWindow(QtWidgets.QMainWindow, Ui_TextEditor):
         self.show()
         
 
-    def change(self):
-        return True
-
     def fileNew(self):
-        self.textEdit.clear()
+        try:
+            self.textEdit.clear()
+        except:
+            message = QErrorMessage(self)
+            message.showMessage("New File Not Possible")
 
     def openFile(self):
-        filename = QFileDialog.getOpenFileName(self, 'Open File', "/home") # get file that user can open
+        filename = QFileDialog.getOpenFileName(self, caption="Open File", filter="*.txt") # get file that user can open
         if filename[0]:
-            with open(filename[0], 'r') as file:
+            with open(filename[0], 'r', encoding="utf-8") as file:
                 data = file.read()
                 self.textEdit.setText(data)
 
-    def fileSave(self):
-        filename = QFileDialog.getSaveFileName(self, 'Save File')
+    def fileSave(self, type, caption):
+        if type == "*.txt":
+            filename = QFileDialog.getSaveFileName(self, caption=caption, filter=type) # by default, will save file as text
+        elif type == "*.pdf":
+            filename = QFileDialog.getSaveFileName(self, caption=caption, filter=type) # by default, will save file as text
+
         if filename[0]:
             with open(filename[0], 'w', encoding="utf-8") as file: # you should encoding by utf-8, otherwise you take Error for persian language
                 text = self.textEdit.toPlainText()
                 file.write(text)
-
-            QMessageBox.about(self, "Save File", "File Saved Successful") # show massage that save was successfull
+            QMessageBox.about(self, caption, "File Saved Successful") # show massage that save was successfull
 
     def printfile(self):
         printer = QPrinter(QPrinter.HighResolution)
         dialog = QPrintDialog(printer, self)
 
-        if dialog.exec_() == QPrintDialog.accepted:
+        if (dialog.exec_() == QPrintDialog.Accepted): # notice: you should write Accepted with captal A
             self.textEdit.print_(printer)
 
     def printPreview(self):
         printer = QPrinter(QPrinter.HighResolution)
         previewDialog = QPrintPreviewDialog(printer, self)
-        previewDialog.paintRequested.connect(self.printPreview2)
+        previewDialog.paintRequested.connect(lambda printer: self.textEdit.print_(printer) ) # if recieved paintRequested signal, we call slot to print text
         previewDialog.exec_()
-
-    def printPreview2(self, printer):
-        self.textEdit.print_(printer)
-
-    def exportPdf(self):
-        fn, _ = QFileDialog.getSaveFileName(self, "Export PDF", None, "PDF files (.pdf) ;; All Files")
-        print(fn)
-        if fn != "":
-            if QFileInfo(fn).suffix()  == "":fn += '.pdf'
-            printer = QPrinter(QPrinter.HighResolution)
-            printer.setOutputFormat(QPrinter.PdfFormat)
-            printer.setOutputFileName(fn)
-            self.textEdit.document().print_(printer)
+            
 
     def exitApp(self):
-        
-        ret = QMessageBox.question(self, 'your file has not been saved', "do you want to save", QMessageBox.Yes | QMessageBox.No | QMessageBox.Cancel)
-        if ret == QMessageBox.Yes: 
-            filename = QFileDialog.getSaveFileName(self, 'Save File')
-            if filename[0]:
-                f = open(filename[0], 'w',encoding="utf-8")
+        ret = QMessageBox.question(self, 'your file has not been saved', "do you want to save", QMessageBox.Yes | QMessageBox.No | QMessageBox.Cancel) # get answer of question for exit
+        if ret == QMessageBox.Yes:
+            self.fileSave("*.txt", "Save File") # save file
 
-                with f:
-                    text = self.textEdit.toPlainText()
-                    f.write(text)
-
-                    QMessageBox.about(self, "Save File", "File Saved Succuessful")
-        if ret == QMessageBox.No: self.close()
+        elif ret == QMessageBox.No:
+            self.close() # close file
 
     def copy(self):
         cursor = self.textEdit.textCursor()
@@ -126,11 +116,9 @@ class MainWindow(QtWidgets.QMainWindow, Ui_TextEditor):
     def paste(self):
         self.textEdit.append(self.copiedText) # paste copied text
 
-    # def cut(self):
-    #     cursor = self.textEdit.textCursor()
-    #     textSelected = cursor.selectedText()
-    #     self.copiedText = textSelected
-    #     self.textEdit.cut()
+    def cut(self):
+        self.copy()
+        self.textEdit.cut()
 
     def fontDialog(self):
         font, ok = QFontDialog.getFont()
@@ -175,14 +163,25 @@ class MainWindow(QtWidgets.QMainWindow, Ui_TextEditor):
         cursor = self.textEdit.textCursor()
         text = cursor.selectedText()
 
-        if name == 'fa':
-            #### translating ######
-            trans = translator.translate(text, src='auto', dest='fa') # its type is googletrans.models.Translated
-        elif name == 'en':
-            #### translating ######
-            trans = translator.translate(text, src='auto', dest='en') # its type is googletrans.models.Translated
-        
-        translated = trans.text # convert googletrans.models.Translated to string
-        self.lineEdit.setText(translated) # set Text to lineEdit
+        if text != "":
+            try:
+                if name == 'fa':
+                    #### translating ######
+                    trans = translator.translate(text, src='auto', dest='fa') # its type is googletrans.models.Translated
+                elif name == 'en':
+                    #### translating ######
+                    trans = translator.translate(text, src='auto', dest='en') # its type is googletrans.models.Translated
+            
+                translated = trans.text # convert googletrans.models.Translated to string
+                self.lineEdit.setText(translated) # set Text to lineEdit
+            except:
+                message = QErrorMessage(self)
+                message.showMessage("Accured a Mistake in Translation")
 
+        else:
+            message = QErrorMessage(self)
+            message.showMessage("Select Text")
+                
 
+    def aboutus(self):
+        QMessageBox.about(self, "about us", "created by: \n Seyed Mousa Mortazavi \n Hossein Ataee \n Ali Haj Sadeghian")

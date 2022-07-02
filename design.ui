@@ -116,6 +116,7 @@ border-radius: 10px;
     </property>
     <addaction name="actionCopy"/>
     <addaction name="actionCopy_Paste"/>
+    <addaction name="actionCut"/>
     <addaction name="separator"/>
     <addaction name="actionUndo"/>
     <addaction name="actionRedo"/>
@@ -335,6 +336,15 @@ border-radius: 10px;
    </property>
    <property name="text">
     <string>Underline</string>
+   </property>
+  </action>
+  <action name="actionCut">
+   <property name="icon">
+    <iconset>
+     <normaloff>icons/icons8-cut-30.png</normaloff>icons/icons8-cut-30.png</iconset>
+   </property>
+   <property name="text">
+    <string>Cut</string>
    </property>
   </action>
  </widget>
