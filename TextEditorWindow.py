@@ -9,6 +9,8 @@ from PyQt5.QtPrintSupport import QPrinter, QPrintDialog, QPrintPreviewDialog
 from design import Ui_TextEditor
 from googletrans import Translator
 
+
+
 class MainWindow(QtWidgets.QMainWindow, Ui_TextEditor):
     def __init__(self) -> None:
         super().__init__()
@@ -19,8 +21,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_TextEditor):
         self.actionNew.triggered.connect(self.fileNew)
         self.actionOpen.triggered.connect(self.openFile)
 
-        self.actionSave.triggered.connect(lambda: self.fileSave("*.txt", "Save File"))
-        self.actionExport.triggered.connect(lambda: self.fileSave("*.pdf", "Export to PDF"))
+        self.actionSave.triggered.connect(self.fileSave)
+        self.actionExport.triggered.connect(self.exportPdf)
 
         self.actionPrint.triggered.connect(self.printfile)
         self.actionPrint_Preview.triggered.connect(self.printPreview)
@@ -48,9 +50,9 @@ class MainWindow(QtWidgets.QMainWindow, Ui_TextEditor):
 
         self.Persian_pushButton.clicked.connect(lambda : self.trans("fa")) # we defined lambda function to recognize which signal was called slot by send function to another function
         self.English_pushButton.clicked.connect(lambda : self.trans("en"))
-        self.actionAbout.triggered.connect(self.aboutus)
 
-        self.thread = None
+
+        self.actionAbout.triggered.connect(self.aboutus)
 
 
 
@@ -74,17 +76,25 @@ class MainWindow(QtWidgets.QMainWindow, Ui_TextEditor):
                 data = file.read()
                 self.textEdit.setText(data)
 
-    def fileSave(self, type, caption):
-        if type == "*.txt":
-            filename = QFileDialog.getSaveFileName(self, caption=caption, filter=type) # by default, will save file as text
-        elif type == "*.pdf":
-            filename = QFileDialog.getSaveFileName(self, caption=caption, filter=type) # by default, will save file as text
-
+    def fileSave(self):
+        filename = QFileDialog.getSaveFileName(self, caption="Save File", filter="*.txt") # by default, will save file as text
         if filename[0]:
             with open(filename[0], 'w', encoding="utf-8") as file: # you should encoding by utf-8, otherwise you take Error for persian language
                 text = self.textEdit.toPlainText()
                 file.write(text)
-            QMessageBox.about(self, caption, "File Saved Successful") # show massage that save was successfull
+            QMessageBox.about(self, "Save File", "File Saved Successful") # show massage that save was successfull
+
+    def exportPdf(self):
+        filename = QFileDialog.getSaveFileName(self, caption="Export to PDF", filter="*.pdf") # by default, will save file as pdf
+        if filename[0]:
+            if QFileInfo(filename[0]).suffix() == "":
+                filename[0] += '.pdf'
+            printer = QPrinter(QPrinter.HighResolution)
+            printer.setOutputFormat(QPrinter.PdfFormat)
+            printer.setOutputFileName(filename[0])
+            self.textEdit.document().print_(printer)
+
+
 
     def printfile(self):
         printer = QPrinter(QPrinter.HighResolution)
@@ -103,7 +113,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_TextEditor):
     def exitApp(self):
         ret = QMessageBox.question(self, 'your file has not been saved', "do you want to save", QMessageBox.Yes | QMessageBox.No | QMessageBox.Cancel) # get answer of question for exit
         if ret == QMessageBox.Yes:
-            self.fileSave("*.txt", "Save File") # save file
+            self.fileSave() # save file
+            self.close() # close file
 
         elif ret == QMessageBox.No:
             self.close() # close file
@@ -181,7 +192,12 @@ class MainWindow(QtWidgets.QMainWindow, Ui_TextEditor):
         else:
             message = QErrorMessage(self)
             message.showMessage("Select Text")
-                
 
     def aboutus(self):
         QMessageBox.about(self, "about us", "created by: \n Seyed Mousa Mortazavi \n Hossein Ataee \n Ali Haj Sadeghian")
+
+
+    
+                
+
+

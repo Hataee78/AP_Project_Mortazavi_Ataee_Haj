@@ -49,7 +49,7 @@ class Ui_SplashScreen(object):
         self.label_description.setAlignment(QtCore.Qt.AlignCenter)
         self.label_description.setObjectName("label_description")
         self.progressBar = QtWidgets.QProgressBar(self.dropShadowFrame)
-        self.progressBar.setGeometry(QtCore.QRect(50, 280, 561, 23))
+        self.progressBar.setGeometry(QtCore.QRect(50, 270, 561, 23))
         self.progressBar.setStyleSheet("QProgressBar {\n"
 "    \n"
 "    background-color: rgb(98, 114, 164);\n"
@@ -65,7 +65,7 @@ class Ui_SplashScreen(object):
         self.progressBar.setProperty("value", 24)
         self.progressBar.setObjectName("progressBar")
         self.label_loading = QtWidgets.QLabel(self.dropShadowFrame)
-        self.label_loading.setGeometry(QtCore.QRect(0, 320, 661, 21))
+        self.label_loading.setGeometry(QtCore.QRect(0, 310, 661, 31))
         font = QtGui.QFont()
         font.setFamily("Segoe UI")
         font.setPointSize(12)
