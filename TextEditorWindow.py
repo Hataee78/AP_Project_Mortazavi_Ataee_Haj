@@ -1,16 +1,18 @@
-from designe import Ui_TextEditor
-from PyQt5 import QtWidgets
-from PyQt5.QtWidgets import QFileDialog, QMessageBox, QFontDialog, QColorDialog
-from PyQt5.QtPrintSupport import QPrinter, QPrintDialog, QPrintPreviewDialog
-from PyQt5.QtCore import QFileInfo, Qt
-from PyQt5.QtGui import QFont, QIcon
-import googletrans
+import sys
+import platform
 from googletrans import Translator
+from PySide2 import QtCore, QtGui, QtWidgets
+from PySide2.QtCore import (QCoreApplication, QPropertyAnimation, QDate, QDateTime, QMetaObject, QObject, QPoint, QRect, QSize, QTime, QUrl, Qt, QEvent)
+from PySide2.QtGui import (QBrush, QColor, QConicalGradient, QCursor, QFont, QFontDatabase, QIcon, QKeySequence, QLinearGradient, QPalette, QPainter, QPixmap, QRadialGradient)
+from PySide2.QtWidgets import *
+from design import Ui_TextEditor
 
-class EditorWindow(QtWidgets.QMainWindow, Ui_TextEditor):
+class MainWindow(QtWidgets.QMainWindow, Ui_TextEditor):
     def __init__(self) -> None:
         super().__init__()
         self.setupUi(self)
+
+        self.textEdit.textChanged.connect(self.change)
 
         self.actionNew.triggered.connect(self.fileNew)
         self.actionOpen.triggered.connect(self.openFile)
@@ -26,13 +28,15 @@ class EditorWindow(QtWidgets.QMainWindow, Ui_TextEditor):
         self.actionRedo.triggered.connect(self.textEdit.redo)
         self.actionFont.triggered.connect(self.fontDialog)
         self.actionColor.triggered.connect(self.colorDialog)
-        self.actionBold.triggered.connect(self.textBold)
-        self.actionItalic.triggered.connect(self.italic)
-        self.actionUnderline.triggered.connect(self.underline)
-        self.actionLeft.triggered.connect(self.alignLeft)
-        self.actionCenter.triggered.connect(self.alignCenter)
-        self.actionRight.triggered.connect(self.alignRight)
-        self.actionJusstify.triggered.connect(self.justify)
+
+        self.actionBold.triggered.connect(lambda: self.formatText("bold"))
+        self.actionItalic.triggered.connect(lambda: self.formatText("italic"))
+        self.actionUnderline.triggered.connect(lambda: self.formatText("underline"))
+
+        self.actionLeft.triggered.connect(lambda: self.align("Left"))
+        self.actionCenter.triggered.connect(lambda: self.align("Center"))
+        self.actionRight.triggered.connect(lambda: self.align("Right"))
+        self.actionJusstify.triggered.connect(lambda: self.align("Justify"))
 
         self.FontSize.setValue(24)
         self.textEdit.setFontPointSize(24)
@@ -51,31 +55,27 @@ class EditorWindow(QtWidgets.QMainWindow, Ui_TextEditor):
         self.show()
         
 
+    def change(self):
+        return True
+
     def fileNew(self):
         self.textEdit.clear()
 
     def openFile(self):
-        filename = QFileDialog.getOpenFileName(self, 'Open File', "/home")
-
+        filename = QFileDialog.getOpenFileName(self, 'Open File', "/home") # get file that user can open
         if filename[0]:
-            f = open(filename[0], 'r')
-            with f:
-                data = f.read()
+            with open(filename[0], 'r') as file:
+                data = file.read()
                 self.textEdit.setText(data)
 
     def fileSave(self):
         filename = QFileDialog.getSaveFileName(self, 'Save File')
-        try:
-            if filename[0]:
-                f = open(filename[0], 'w')
+        if filename[0]:
+            with open(filename[0], 'w', encoding="utf-8") as file: # you should encoding by utf-8, otherwise you take Error for persian language
+                text = self.textEdit.toPlainText()
+                file.write(text)
 
-                with f:
-                    text = self.textEdit.toPlainText()
-                    f.write(text)
-
-                    QMessageBox.about(self, "Save File", "File Saved Succuessful")
-        except:
-            print("error")            
+            QMessageBox.about(self, "Save File", "File Saved Successful") # show massage that save was successfull
 
     def printfile(self):
         printer = QPrinter(QPrinter.HighResolution)
@@ -104,15 +104,27 @@ class EditorWindow(QtWidgets.QMainWindow, Ui_TextEditor):
             self.textEdit.document().print_(printer)
 
     def exitApp(self):
-        self.close()
+        
+        ret = QMessageBox.question(self, 'your file has not been saved', "do you want to save", QMessageBox.Yes | QMessageBox.No | QMessageBox.Cancel)
+        if ret == QMessageBox.Yes: 
+            filename = QFileDialog.getSaveFileName(self, 'Save File')
+            if filename[0]:
+                f = open(filename[0], 'w',encoding="utf-8")
+
+                with f:
+                    text = self.textEdit.toPlainText()
+                    f.write(text)
+
+                    QMessageBox.about(self, "Save File", "File Saved Succuessful")
+        if ret == QMessageBox.No: self.close()
 
     def copy(self):
         cursor = self.textEdit.textCursor()
-        textselected = cursor.selectedText()
-        self.copiedText = textselected
+        textselected = cursor.selectedText() # it is selected text
+        self.copiedText = textselected # save in variable of class
 
     def paste(self):
-        self.textEdit.append(self.copiedText)
+        self.textEdit.append(self.copiedText) # paste copied text
 
     # def cut(self):
     #     cursor = self.textEdit.textCursor()
@@ -122,7 +134,6 @@ class EditorWindow(QtWidgets.QMainWindow, Ui_TextEditor):
 
     def fontDialog(self):
         font, ok = QFontDialog.getFont()
-
         if ok:
             self.textEdit.setFont(font)
 
@@ -130,33 +141,28 @@ class EditorWindow(QtWidgets.QMainWindow, Ui_TextEditor):
             color = QColorDialog.getColor() 
             self.textEdit.setTextColor(color)
 
-    def textBold(self):
-        font = QFont()
-        font.setBold(True)
-        self.textEdit.setFont(font)
+    ####### format Text: Bold, Italic and Underline #####
+    def formatText(self, type):
+        if type == 'bold':
+            self.textEdit.setFontWeight(QFont.Bold)
+        elif type == 'italic':
+            self.textEdit.setFontItalic(True)
+        elif type == 'underline':
+            self.textEdit.setFontUnderline(True)
 
 
-    def italic(self):
-        font =QFont()
-        font.setItalic(True)
-        self.textEdit.setFont(font)
+    ######## set align of text: Left, Center , Right and Justify #######
+    def align(self, type):
+        if type == 'Left':
+            self.textEdit.setAlignment(Qt.AlignLeft)
+        elif type == 'Center':
+            self.textEdit.setAlignment(Qt.AlignCenter)
+        elif type == 'Right':
+            self.textEdit.setAlignment(Qt.AlignRight)
+        elif type == 'Justify':
+            self.textEdit.setAlignment(Qt.AlignJustify)
 
-    def underline(self):
-        font = QFont()
-        font.setUnderline(True)
-        self.textEdit.setFont(font)
 
-    def alignLeft(self):
-        self.textEdit.setAlignment(Qt.AlignLeft)
-    
-    def alignCenter(self):
-        self.textEdit.setAlignment(Qt.AlignCenter)
-
-    def alignRight(self):
-        self.textEdit.setAlignment(Qt.AlignRight)
-
-    def justify(self):
-        self.textEdit.setAlignment(Qt.AlignJustify)
 
     def setFontSize(self):
         value = self.FontSize.value()
@@ -168,9 +174,6 @@ class EditorWindow(QtWidgets.QMainWindow, Ui_TextEditor):
         #### selected text ###
         cursor = self.textEdit.textCursor()
         text = cursor.selectedText()
-
-        # print(translator.detect(text)) # detect language of text
-        # print(translator.translate(text, src='auto', dest='fa'))
 
         if name == 'fa':
             #### translating ######
